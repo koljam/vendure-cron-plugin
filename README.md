@@ -1,5 +1,5 @@
 # vendure-cron-plugin
-Adds a CRON functionality to Vendure
+Adds a simple CRON functionality to Vendure. This can be used to run functions regularly, like checking shipment apis, raise prices every month, export data etc.
 
 ## Usage
 
@@ -24,3 +24,5 @@ export const config: VendureConfig = {
     ]
 }
 ```
+
+For more information on the scheduling, visit the [node-cron](https://github.com/kelektiv/node-cron) docs.
