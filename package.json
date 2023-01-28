@@ -2,9 +2,10 @@
 	"name": "vendure-cron-plugin",
 	"version": "1.0.0",
 	"description": "Adds a CRON functionality to Vendure",
-	"main": "index.ts",
+	"main": "lib/index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "tsc"
 	},
 	"repository": {
 		"type": "git",
@@ -16,7 +17,8 @@
 	],
 	"dependencies": {
 		"@vendure/core": "^1.9.2",
-		"node-cron": "^3.0.2"
+		"node-cron": "^3.0.2",
+		"typescript": "^4.9.4"
 	},
 	"author": "Kolja Martens",
 	"license": "ISC",
