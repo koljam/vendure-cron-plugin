@@ -1,6 +1,6 @@
 {
 	"name": "vendure-cron-plugin",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Adds a CRON functionality to Vendure",
 	"main": "lib/index.js",
 	"scripts": {
@@ -20,7 +20,7 @@
 		"node-cron": "^3.0.2",
 		"typescript": "^4.9.4"
 	},
-	"author": "Kolja Martens",
+	"author": "DearUniverse",
 	"license": "ISC",
 	"bugs": {
 		"url": "https://github.com/koljam/vendure-cron-plugin/issues"
