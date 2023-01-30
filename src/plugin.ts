@@ -1,19 +1,16 @@
-import {
-	EventBus,
-	PluginCommonModule,
-	Type,
-	VendurePlugin,
-	VendureEvent,
-} from "@vendure/core";
-import {Job, PluginInitOptions} from "./types";
-import * as cron from "node-cron";
+import { EventBus, PluginCommonModule, Type, VendureEvent, VendurePlugin } from '@vendure/core';
+import path from 'path';
+
+import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
+import { Job, PluginInitOptions as CronInitOptions } from './types';
+import { Logger, OnApplicationBootstrap } from '@nestjs/common';
+import * as cron from 'node-cron';
 
 export class CronEvent extends VendureEvent {
-	constructor(public readonly taskId: string) {
-		super();
-	}
+    constructor(public readonly taskId: string) {
+        super();
+    }
 }
-
 /**
  * An example Vendure plugin.
  *
@@ -22,46 +19,43 @@ export class CronEvent extends VendureEvent {
  * export const config: VendureConfig = {
  *   //...
  *   plugins: [
- *     CronPlugin.init({
+ *     ExamplePlugin.init({
  *       // options
  *     }),
  *   ]
  * }
  * ```
  */
-
 @VendurePlugin({
-	imports: [PluginCommonModule],
+    imports: [PluginCommonModule],
 })
-export class CronPlugin {
-	static options: PluginInitOptions;
-    static eventBus: EventBus;
-	constructor(private eventBus: EventBus) {
-        this.eventBus = eventBus;
+export class CronPlugin implements OnApplicationBootstrap {
+    static options: CronInitOptions = { cron: [], logEvents: false };
+
+    /** @internal */
+    constructor(private eventBus: EventBus) {}
+
+    static init(options: CronInitOptions): Type<CronPlugin> {
+        this.options = options;
+        return this;
     }
 
-	static init(options: PluginInitOptions): Type<CronPlugin> {
-		CronPlugin.options = options;
-        CronPlugin.options.cron.forEach(job => {
+    async onApplicationBootstrap() {
+        CronPlugin.options.cron.forEach((job: Job) => {
             cron.schedule(job.schedule, () => {
                 if (job.task) job.task();
                 if (job.taskId) {
-                    this.runJob(job);
+                    if (CronPlugin.options.logEvents) {
+                        Logger.log('Firing Event', loggerCtx);
+                    }
+                    this.eventBus.publish(new CronEvent(job.taskId));
                 }
             });
         });
-		return this;
-	}
-
-	static runJob(job: Job) {
-        console.log("Firing Event")
-		this.eventBus.publish(new CronEvent(job.taskId));
-	}
-
-	async onApplicationBootstrap() {
-		this.eventBus.ofType(CronEvent).subscribe(event => {
-			// Logger.info(`Cron Event "${event.taskId}" fired`, "CronPlugin");
-			console.log(`Cron Event "${event.taskId}" fired`);
-		});
-	}
+        if (CronPlugin.options.logEvents) {
+            this.eventBus.ofType(CronEvent).subscribe((event) => {
+                Logger.log(`Cron Event "${event.taskId}" fired`, loggerCtx);
+            });
+        }
+    }
 }

@@ -8,4 +8,5 @@ export interface Job {
 }
 export interface PluginInitOptions {
     cron: Job[];
+    logEvents?: boolean;
 }

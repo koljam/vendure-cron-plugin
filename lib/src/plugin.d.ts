@@ -1,5 +1,6 @@
-import { EventBus, Type, VendureEvent } from "@vendure/core";
-import { Job, PluginInitOptions } from "./types";
+import { EventBus, Type, VendureEvent } from '@vendure/core';
+import { PluginInitOptions as CronInitOptions } from './types';
+import { OnApplicationBootstrap } from '@nestjs/common';
 export declare class CronEvent extends VendureEvent {
     readonly taskId: string;
     constructor(taskId: string);
@@ -12,19 +13,18 @@ export declare class CronEvent extends VendureEvent {
  * export const config: VendureConfig = {
  *   //...
  *   plugins: [
- *     CronPlugin.init({
+ *     ExamplePlugin.init({
  *       // options
  *     }),
  *   ]
  * }
  * ```
  */
-export declare class CronPlugin {
+export declare class CronPlugin implements OnApplicationBootstrap {
     private eventBus;
-    static options: PluginInitOptions;
-    static eventBus: EventBus;
+    static options: CronInitOptions;
+    /** @internal */
     constructor(eventBus: EventBus);
-    static init(options: PluginInitOptions): Type<CronPlugin>;
-    static runJob(job: Job): void;
+    static init(options: CronInitOptions): Type<CronPlugin>;
     onApplicationBootstrap(): Promise<void>;
 }
