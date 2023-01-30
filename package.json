@@ -15,18 +15,16 @@
 		"Vendure",
 		"Cron"
 	],
-	"dependencies": {
+	"devDependencies": {
 		"@vendure/core": "^1.9.2",
 		"node-cron": "^3.0.2",
-		"typescript": "^4.9.4"
+		"typescript": "^4.9.4",
+		"@types/node-cron": "^3.0.7"
 	},
 	"author": "DearUniverse",
 	"license": "ISC",
 	"bugs": {
 		"url": "https://github.com/koljam/vendure-cron-plugin/issues"
 	},
-	"homepage": "https://github.com/koljam/vendure-cron-plugin#readme",
-	"devDependencies": {
-		"@types/node-cron": "^3.0.7"
-	}
+	"homepage": "https://github.com/koljam/vendure-cron-plugin#readme"
 }

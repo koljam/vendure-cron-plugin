@@ -1,6 +1,18 @@
-import { PluginCommonModule, Type, VendurePlugin } from '@vendure/core';
-import { PluginInitOptions } from './types';
-import * as cron from 'node-cron';
+import {
+	EventBus,
+	PluginCommonModule,
+	Type,
+	VendurePlugin,
+	VendureEvent,
+} from "@vendure/core";
+import {Job, PluginInitOptions} from "./types";
+import * as cron from "node-cron";
+
+export class CronEvent extends VendureEvent {
+	constructor(public readonly taskId: string) {
+		super();
+	}
+}
 
 /**
  * An example Vendure plugin.
@@ -19,17 +31,37 @@ import * as cron from 'node-cron';
  */
 
 @VendurePlugin({
-    imports: [PluginCommonModule],
+	imports: [PluginCommonModule],
 })
 export class CronPlugin {
-    static options: PluginInitOptions;
-
-    static init(options: PluginInitOptions): Type<CronPlugin> {
-        this.options = options;
-        this.options.cron.forEach(job => {
-            cron.schedule(job.schedule, job.task);
-        });
-        console.log("Cron-Jobs started");
-        return CronPlugin;
+	static options: PluginInitOptions;
+    static eventBus: EventBus;
+	constructor(private eventBus: EventBus) {
+        this.eventBus = eventBus;
     }
+
+	static init(options: PluginInitOptions): Type<CronPlugin> {
+		CronPlugin.options = options;
+        CronPlugin.options.cron.forEach(job => {
+            cron.schedule(job.schedule, () => {
+                if (job.task) job.task();
+                if (job.taskId) {
+                    this.runJob(job);
+                }
+            });
+        });
+		return this;
+	}
+
+	static runJob(job: Job) {
+        console.log("Firing Event")
+		this.eventBus.publish(new CronEvent(job.taskId));
+	}
+
+	async onApplicationBootstrap() {
+		this.eventBus.ofType(CronEvent).subscribe(event => {
+			// Logger.info(`Cron Event "${event.taskId}" fired`, "CronPlugin");
+			console.log(`Cron Event "${event.taskId}" fired`);
+		});
+	}
 }
