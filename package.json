@@ -1,13 +1,13 @@
 {
-  "name": "vendure-plugin-template",
+  "name": "vendure-cron-plugin",
   "version": "1.0.2",
-  "description": "A Vendure plugin template",
+	"description": "Adds a simple CRON functionality to Vendure",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
     "lib/**/*"
   ],
-  "author": "Kolja Martens <info@kolja-martens.de>",
+  "author": "DearUniverse Kolja Martens <info@kolja-martens.de>",
   "license": "MIT",
   "private": false,
   "scripts": {
@@ -56,10 +56,22 @@
     "ts-node": "^9.1.1",
     "typescript": "4.1.5"
   },
+  "repository": {
+		"type": "git",
+		"url": "git+https://github.com/koljam/vendure-cron-plugin.git"
+	},
+  "bugs": {
+		"url": "https://github.com/koljam/vendure-cron-plugin/issues"
+	},
+  "homepage": "https://github.com/koljam/vendure-cron-plugin#readme",
   "dependencies": {
     "@types/node-cron": "^3.0.7",
     "dotenv": "^16.0.3",
     "mysql": "^2.18.1",
     "node-cron": "^3.0.2"
-  }
+  },
+  "keywords": [
+		"Vendure",
+		"Cron"
+	]
 }
