@@ -1,6 +1,6 @@
 {
   "name": "vendure-cron-plugin",
-  "version": "1.0.2",
+  "version": "1.0.4",
 	"description": "Adds a simple CRON functionality to Vendure",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

@@ -1,13 +1,22 @@
-import { EventBus, PluginCommonModule, Type, VendureEvent, VendurePlugin } from '@vendure/core';
+import {
+    EventBus,
+    PluginCommonModule,
+    RequestContext,
+    RequestContextService,
+    Type,
+    VendureEvent,
+    VendurePlugin,
+} from '@vendure/core';
 import path from 'path';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
 import { Job, PluginInitOptions as CronInitOptions } from './types';
 import { Logger, OnApplicationBootstrap } from '@nestjs/common';
 import * as cron from 'node-cron';
+import { setProcessContext } from '@vendure/core/dist/process-context/process-context';
 
 export class CronEvent extends VendureEvent {
-    constructor(public readonly taskId: string) {
+    constructor(public readonly taskId: string, public ctx: RequestContext) {
         super();
     }
 }
@@ -33,7 +42,7 @@ export class CronPlugin implements OnApplicationBootstrap {
     static options: CronInitOptions = { cron: [], logEvents: false };
 
     /** @internal */
-    constructor(private eventBus: EventBus) {}
+    constructor(private eventBus: EventBus, private requestContextService: RequestContextService) {}
 
     static init(options: CronInitOptions): Type<CronPlugin> {
         this.options = options;
@@ -42,13 +51,24 @@ export class CronPlugin implements OnApplicationBootstrap {
 
     async onApplicationBootstrap() {
         CronPlugin.options.cron.forEach((job: Job) => {
-            cron.schedule(job.schedule, () => {
+            if (!job.task && !job.taskId) {
+                Logger.error(
+                    'Please provide either a task function or a taskId to run a cronjob.',
+                    loggerCtx,
+                );
+                throw new Error('LOL');
+                return;
+            }
+            cron.schedule(job.schedule, async () => {
                 if (job.task) job.task();
                 if (job.taskId) {
                     if (CronPlugin.options.logEvents) {
                         Logger.log('Firing Event', loggerCtx);
                     }
-                    this.eventBus.publish(new CronEvent(job.taskId));
+                    const ctx = await this.requestContextService.create({
+                        apiType: 'admin',
+                    });
+                    this.eventBus.publish(new CronEvent(job.taskId, ctx));
                 }
             });
         });

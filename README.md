@@ -55,8 +55,12 @@ export class YourPlugin implements OnApplicationBootstrap {
     constructor(private eventBus: EventBus) {}
 
     async onApplicationBootstrap() {
-        this.eventBus.ofType(CronEvent).subscribe((event) => {
+        this.eventBus
+            .ofType(CronEvent)
+			.pipe(filter(event => event.taskId === "task1"))
+            .subscribe((event) => {
             console.log(`Cron Event "${event.taskId}" fired`);
+            const ctx = event.ctx;
             // Perform any tasks here in response to the fired event
         });
     }

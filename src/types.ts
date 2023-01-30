@@ -4,8 +4,8 @@
 
 export interface Job {
     schedule: string;
-    task: () => void;
-    taskId: string;
+    task?: () => void;
+    taskId?: string;
 }
 
 export interface PluginInitOptions {
