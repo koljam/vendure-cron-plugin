@@ -47,6 +47,7 @@ For more information on the scheduling, visit the [node-cron](https://github.com
 import { OnApplicationBootstrap } from '@nestjs/common';
 import { PluginCommonModule, VendurePlugin, EventBus } from '@vendure/core';
 import { CronEvent } from 'vendure-cron-plugin';
+import {filter} from "rxjs/operators";
 
 @VendurePlugin({
     imports: [PluginCommonModule],
