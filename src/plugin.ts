@@ -56,7 +56,6 @@ export class CronPlugin implements OnApplicationBootstrap {
                     'Please provide either a task function or a taskId to run a cronjob.',
                     loggerCtx,
                 );
-                throw new Error('LOL');
                 return;
             }
             cron.schedule(job.schedule, async () => {
